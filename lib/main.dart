@@ -1,10 +1,12 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load();
   runApp(const MaterialApp(
     home: MyApp(),
   ));
@@ -25,28 +27,29 @@ class _MyAppState extends State<MyApp> {
       appBar: AppBar(title: const Text('Test')),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: Column(children: <Widget>[
-            Text('Printing here ${val}'),
-            const SizedBox(
-              height: 10.0,
-            ),
-            FlatButton(
-              onPressed: () async {
-                String url =
-                    "http://127.0.0.1:5000"; // to be replaced using env var
-
+        child: Row(children: <Widget>[
+          FlatButton(
+            onPressed: () async {
+              String url = dotenv.env['API_URL'] ?? 'API_URL not found';
+// ignore: unnecessary_null_comparison
+              if (url != 'API_URL not found') {
                 final response = await http.get(Uri.parse(url + '/test'));
                 final decoded =
                     json.decode(response.body) as Map<String, dynamic>;
                 setState(() {
                   val = decoded['greetings'];
                 });
-              },
-              child: Text('Get from Flask'),
-            ),
-          ]),
-        ),
+              } else {
+                print(url);
+              }
+            },
+            child: Text('Click here to Get Message from Flask'),
+          ),
+          const SizedBox(
+            width: 10.0,
+          ),
+          Text(val)
+        ]),
       ),
     );
   }
