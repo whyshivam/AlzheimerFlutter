@@ -11,7 +11,13 @@ import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+      options: FirebaseOptions(
+    apiKey: dotenv.env['API_KEY'] ?? '',
+    appId: dotenv.env['API_ID'] ?? '',
+    projectId: dotenv.env['ProjectID'] ?? '',
+    messagingSenderId: '',
+  ));
   await dotenv.load();
   runApp(const MyApp());
 }
@@ -49,8 +55,12 @@ class AuthenticationWrapper extends StatelessWidget {
     final firebaseUser = context.watch<User>();
     // ignore: unnecessary_null_comparison
     if (firebaseUser != null) {
+      print("Signed in");
+
       return const HomePage();
     } else {
+      print("Not Signed In");
+
       return SignInPage();
     }
   }
