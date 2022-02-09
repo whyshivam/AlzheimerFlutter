@@ -1,5 +1,7 @@
 // ignore_for_file: deprecated_member_use
 import 'package:alzh_flutter/auth.dart';
+import 'package:alzh_flutter/home.dart';
+import 'package:alzh_flutter/sigin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -14,14 +16,9 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -30,6 +27,7 @@ class _MyAppState extends State<MyApp> {
             create: (_) => AuthenticationService(FirebaseAuth.instance),
           ),
           StreamProvider(
+              initialData: const [],
               create: (context) =>
                   context.read<AuthenticationService>().authStateChanges)
         ],
@@ -51,8 +49,9 @@ class AuthenticationWrapper extends StatelessWidget {
     final firebaseUser = context.watch<User>();
     // ignore: unnecessary_null_comparison
     if (firebaseUser != null) {
-      return const Text("Signed In");
+      return const HomePage();
+    } else {
+      return SignInPage();
     }
-    return const Text("Not Signed In");
   }
 }
